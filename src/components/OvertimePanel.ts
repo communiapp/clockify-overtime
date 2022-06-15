@@ -8,6 +8,8 @@ interface FormState {
   apiKey: string;
   workspace?: string;
   period?: Moment[];
+  workingDays: number[];
+  workingDaysPreset: object;
   workingHours: number;
   workspaces: ReadonlyArray<ClockifyWorkspace>;
   userAvatarUrl?: string;
@@ -21,6 +23,7 @@ interface FormState {
 interface SavedState {
   apiKey: string;
   workingHours: number;
+  workingDays: number[];
 }
 
 export default defineComponent({
@@ -34,6 +37,14 @@ export default defineComponent({
       apiKey: savedValues?.apiKey || '',
       period: [moment().startOf('year'), moment()],
       workingHours: savedValues?.workingHours || 40,
+      workingDays: savedValues?.workingDays || [1,2,3,4,5],
+      workingDaysPreset: [
+        {"name":"Monday", "id": 1},
+        {"name":"Tuesday", "id": 2},
+        {"name":"Wednesday", "id": 3},
+        {"name":"Thursday", "id": 4},
+        {"name":"Friday", "id": 5}
+      ],
       workspaces: [],
       users: []
     });
@@ -82,7 +93,8 @@ export default defineComponent({
       console.log('submit!', toRaw(formState));
       const valuesToSave: SavedState = {
         apiKey: formState.apiKey,
-        workingHours: formState.workingHours
+        workingHours: formState.workingHours,
+        workingDays: formState.workingDays
       };
       localStorage.setItem('overtimeFormState', JSON.stringify(valuesToSave));
 
@@ -93,7 +105,8 @@ export default defineComponent({
           formState.workspace,
           formState.period[0].toDate(),
           formState.period[1].toDate(),
-          formState.workingHours / 5
+          formState.workingHours / 5,
+          formState.workingDays
         );
         if (result) {
           formState.overtime = {
@@ -101,7 +114,7 @@ export default defineComponent({
             allocatedHours: moment.duration(result.allocatedSeconds * 1000).asHours(),
             overtimeHours: moment.duration(result.overtimeSeconds * 1000).asHours(),
             isOver: result.overtimeSeconds > 0,
-            missingDates: result.missingDates.map((date) => moment(date).format('LL'))
+            missingDates: result.missingDates.map((date) => moment(date).format('dd, DD.MM.YYYY'))
           };
         } else {
           formState.overtime = undefined;

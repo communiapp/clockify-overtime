@@ -49,6 +49,11 @@
       <a-form-item required label="Working hours per week">
         <a-input v-model:value="formState.workingHours" />
       </a-form-item>
+      <a-form-item required label="Working days">
+        <a-select mode="multiple" v-model:value="formState.workingDays" placeholder="please select your working days">
+          <a-select-option v-for="wd in formState.workingDaysPreset" :key="wd.name" :value="wd.id">{{ wd.name }}</a-select-option>
+        </a-select>
+      </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button type="primary" @click="onSubmit">Submit</a-button>
       </a-form-item>
