@@ -1,4 +1,4 @@
-import { requestAndCalculateOvertime } from '@/calculate';
+import { generatePDF, requestAndCalculateOvertime } from '@/calculate';
 import { RuleObject } from 'ant-design-vue/lib/form/interface';
 import moment, { Moment } from 'moment';
 import { defineComponent, reactive, ref, toRaw, UnwrapRef, watch } from 'vue';
@@ -122,6 +122,19 @@ export default defineComponent({
       }
     };
 
+    const generateReport = async () => {
+      if (formState.userId && formState.workspace && formState.period) {
+        const result = await generatePDF(
+          formState.apiKey,
+          formState.userId,
+          formState.workspace,
+          formState.period[0].toDate(),
+          formState.period[1].toDate()
+        );
+      }
+    };
+
+
     const rules = {
       apiKey: [{ validator: validateApiKey, trigger: 'blur' }]
     };
@@ -139,7 +152,8 @@ export default defineComponent({
       formState,
       rules,
       ranges,
-      onSubmit
+      onSubmit,
+      generateReport
     };
   }
 });

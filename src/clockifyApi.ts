@@ -5,6 +5,7 @@ const REPORT_BASE_URL = 'https://reports.api.clockify.me/v1';
 
 const clockify = axios.create({ baseURL: BASE_URL, validateStatus: (status) => status < 400 });
 const report = axios.create({ baseURL: REPORT_BASE_URL, validateStatus: (status) => status < 400 });
+const reportPDF = axios.create({ baseURL: REPORT_BASE_URL, validateStatus: (status) => status < 400, responseType: 'blob' });
 
 export interface CurrentUserResponse {
   id: string;
@@ -98,5 +99,67 @@ export async function getSummaryReport(
       headers: { 'X-Api-Key': apiKey }
     }
   );
+  return response.data;
+}
+export async function getSummaryReportPDF(
+  apiKey: string,
+  userId: string,
+  workspaceId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<SummaryReportResponse> {
+
+  const users = await getAllUsers(apiKey, workspaceId);
+  const currentUser = users.filter(user => user.id === userId)[0];
+
+  const response = await reportPDF.post<SummaryReportResponse>(
+    `/workspaces/${workspaceId}/reports/summary`,
+    {
+      dateRangeStart: startDate.toISOString(),
+      dateRangeEnd: endDate.toISOString(),
+      exportType: "PDF",
+      summaryFilter: {
+        groups: ['USER', 'DATE']
+      },
+      userLocale: "de_DE",
+      users: {
+        ids: [userId],
+        contains: 'CONTAINS',
+        status: 'ALL'
+      },
+      amountShown: 'HIDE_AMOUNT',
+      zoomLevel: "MONTH"
+    },
+    {
+      baseURL: REPORT_BASE_URL,
+      headers: { 'X-Api-Key': apiKey }
+    }
+  );
+  const blobData: unknown = response.data ;
+  const blob = new Blob([blobData as Blob], { type: 'application/pdf' });
+
+  const URL = window.URL || window.webkitURL;
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const name = currentUser.name + "_" + startDate.toISOString().split('T')[0] + "_" +  endDate.toISOString().split('T')[0]+".pdf";
+  link.target   = '_blank';
+  link.href = url;
+  link.setAttribute(    //if you just want to preview pdf and dont want download delete this three lines
+     'download',
+     name,
+   );
+
+  // Append to html link element page
+  document.body.appendChild(link);
+
+  // Start download
+  link.click();
+
+  // Clean up and remove the link
+  if(link && link.parentNode){
+    link.parentNode.removeChild(link);
+  }
+  URL.revokeObjectURL(url);
+
   return response.data;
 }

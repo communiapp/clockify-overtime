@@ -57,6 +57,9 @@
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
         <a-button type="primary" @click="onSubmit">Submit</a-button>
       </a-form-item>
+      <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+        <a-button type="secondary" @click="generateReport">PDF herunterladen</a-button>
+      </a-form-item>
     </a-form>
     <a-row v-if="formState.overtime">
       <a-col offset="4"
@@ -74,6 +77,8 @@
             <li>Sick leave</li>
           </ul>
           <div v-for="date in formState.overtime.missingDates" :key="date">{{ date }}</div>
+          <h3>Anmerkung</h3>
+          <p>Vor dem 01.07.22 mussten Feiertage getrackt werden, danach nicht mehr.</p>
         </div>
       </a-col>
     </a-row>
