@@ -4,6 +4,10 @@ import moment, { Moment } from 'moment';
 import { defineComponent, reactive, ref, toRaw, UnwrapRef, watch } from 'vue';
 import { AllUsersResponse, ClockifyWorkspace, getAllUsers, getCurrentUser, getWorkspaces } from '../clockifyApi';
 
+interface HoursPerWeek {
+  id: string;
+  hoursPerWeek: number;
+}
 interface FormState {
   apiKey: string;
   workspace?: string;
@@ -18,6 +22,7 @@ interface FormState {
   users: ReadonlyArray<AllUsersResponse>;
   isAdmin?: boolean;
   overtime?: { businessHours: number; allocatedHours: number; overtimeHours: number; isOver?: boolean; missingDates: string[] };
+  weeklyHoursByUser: Array<HoursPerWeek>;
 }
 
 interface SavedState {
@@ -46,7 +51,8 @@ export default defineComponent({
         {"name":"Friday", "id": 5}
       ],
       workspaces: [],
-      users: []
+      users: [],
+      weeklyHoursByUser: []
     });
     const readWorkspaces = async (apiKey: string) => {
       const currentUser = await getCurrentUser(apiKey);
@@ -75,6 +81,26 @@ export default defineComponent({
         }
       }
     );
+
+    const changeUser = function(user:string){
+      //only needs to be defined if weekly hours is != 40
+      const weeklyHoursByUser: Array<HoursPerWeek>  = [
+        {id: "61f92781ac89702589768bb9", "hoursPerWeek": 8.6},
+        {id: "6180ff00f9914c556e304294", "hoursPerWeek":  18},
+        {id: "6156ba67d46cbb188cf768d7", "hoursPerWeek":  1.97},
+        {id: "6156ba5ab89747128196a7e9", "hoursPerWeek":  10},
+        {id: "615ab7b9bed77c3f3e9743e8", "hoursPerWeek":  8.6}
+      ];
+
+      const userSpecificHours = weeklyHoursByUser.find(item => item.id === user);
+      if(userSpecificHours &&  userSpecificHours.hoursPerWeek){
+        formState.workingHours = userSpecificHours.hoursPerWeek;
+      }else{
+        formState.workingHours = 40;
+      }
+
+    };
+
     const validateApiKey = async (rule: RuleObject, value: string) => {
       if (value) {
         try {
@@ -153,7 +179,8 @@ export default defineComponent({
       rules,
       ranges,
       onSubmit,
-      generateReport
+      generateReport,
+      changeUser
     };
   }
 });

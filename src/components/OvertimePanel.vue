@@ -29,7 +29,7 @@
         </a-select>
       </a-form-item>
       <a-form-item required label="User" v-if="formState.isAdmin">
-        <a-select v-model:value="formState.userId" placeholder="please select user">
+        <a-select v-model:value="formState.userId" placeholder="please select user" v-on:change="changeUser">
           <a-select-option v-for="user in formState.users" :key="user.id" :value="user.id"
             ><span
               ><img
