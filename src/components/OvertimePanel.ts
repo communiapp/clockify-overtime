@@ -86,7 +86,7 @@ export default defineComponent({
       //only needs to be defined if weekly hours is != 40
       const weeklyHoursByUser: Array<HoursPerWeek>  = [
         {id: "61f92781ac89702589768bb9", "hoursPerWeek": 8.6},
-        {id: "6180ff00f9914c556e304294", "hoursPerWeek":  18},
+        {id: "6180ff00f9914c556e304294", "hoursPerWeek":  21},
         {id: "6156ba67d46cbb188cf768d7", "hoursPerWeek":  1.97},
         {id: "6156ba5ab89747128196a7e9", "hoursPerWeek":  10},
         {id: "615ab7b9bed77c3f3e9743e8", "hoursPerWeek":  8.6}

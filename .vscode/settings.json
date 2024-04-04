@@ -12,36 +12,36 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": true
+      "source.organizeImports": "never",
+      "source.fixAll": "explicit"
     }
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": true
+      "source.organizeImports": "never",
+      "source.fixAll": "explicit"
     }
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": true
+      "source.organizeImports": "never",
+      "source.fixAll": "explicit"
     }
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": true
+      "source.organizeImports": "never",
+      "source.fixAll": "explicit"
     }
   },
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false,
-      "source.fixAll": true
+      "source.organizeImports": "never",
+      "source.fixAll": "explicit"
     }
   }
 }
