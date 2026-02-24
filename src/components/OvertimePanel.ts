@@ -1,4 +1,5 @@
 import { generatePDF, requestAndCalculateOvertime } from '@/calculate';
+import { overtimeCarryover } from '@/overtimeCarryover';
 import { RuleObject } from 'ant-design-vue/lib/form/interface';
 import moment, { Moment } from 'moment';
 import { defineComponent, reactive, ref, toRaw, UnwrapRef, watch } from 'vue';
@@ -21,7 +22,7 @@ interface FormState {
   userId?: string;
   users: ReadonlyArray<AllUsersResponse>;
   isAdmin?: boolean;
-  overtime?: { businessHours: number; allocatedHours: number; overtimeHours: number; isOver?: boolean; missingDates: string[] };
+  overtime?: { businessHours: number; allocatedHours: number; overtimeHours: number; carryoverHours: number; totalOvertimeHours: number; isOver?: boolean; missingDates: string[] };
   weeklyHoursByUser: Array<HoursPerWeek>;
 }
 
@@ -135,11 +136,17 @@ export default defineComponent({
           formState.workingDays
         );
         if (result) {
+          const carryoverHours = overtimeCarryover
+            .filter(c => c.userId === formState.userId && c.year === formState.period![0].year())
+            .reduce((sum, c) => sum + c.overtimeHours, 0);
+          const baseOvertimeHours = moment.duration(result.overtimeSeconds * 1000).asHours();
           formState.overtime = {
             businessHours: moment.duration(result.businessSeconds * 1000).asHours(),
             allocatedHours: moment.duration(result.allocatedSeconds * 1000).asHours(),
-            overtimeHours: moment.duration(result.overtimeSeconds * 1000).asHours(),
-            isOver: result.overtimeSeconds > 0,
+            overtimeHours: baseOvertimeHours,
+            carryoverHours,
+            totalOvertimeHours: baseOvertimeHours + carryoverHours,
+            isOver: (baseOvertimeHours + carryoverHours) > 0,
             missingDates: result.missingDates.map((date) => moment(date).format('dd, DD.MM.YYYY'))
           };
         } else {

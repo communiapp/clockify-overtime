@@ -66,8 +66,16 @@
         ><p>
           Business hours (considering holidays): <b>{{ formState.overtime.businessHours }} h</b><br />
           Allocated hours: <b>{{ formState.overtime.allocatedHours.toFixed(2) }} h</b><br />
-          {{ formState.overtime.isOver ? 'Overtime' : 'Missing time' }}: <b>{{ formState.overtime.overtimeHours.toFixed(2) }} h</b>
-          {{ formState.overtime.isOver ? '😁' : '😨' }}
+          <template v-if="formState.overtime.carryoverHours !== 0">
+            Überstunden (aktuell): <b>{{ formState.overtime.overtimeHours.toFixed(2) }} h</b><br />
+            Übertrag Vorjahr: <b>{{ formState.overtime.carryoverHours.toFixed(2) }} h</b><br />
+            Gesamt: <b>{{ formState.overtime.totalOvertimeHours.toFixed(2) }} h</b>
+            {{ formState.overtime.isOver ? '😁' : '😨' }}
+          </template>
+          <template v-else>
+            {{ formState.overtime.isOver ? 'Overtime' : 'Missing time' }}: <b>{{ formState.overtime.overtimeHours.toFixed(2) }} h</b>
+            {{ formState.overtime.isOver ? '😁' : '😨' }}
+          </template>
         </p>
         <div v-if="formState.overtime.missingDates.length">
           Please check the following dates in Clockify. Each day that is not a bavarian holiday should be allocated as either:
