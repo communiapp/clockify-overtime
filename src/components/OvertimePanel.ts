@@ -22,7 +22,15 @@ interface FormState {
   userId?: string;
   users: ReadonlyArray<AllUsersResponse>;
   isAdmin?: boolean;
-  overtime?: { businessHours: number; allocatedHours: number; overtimeHours: number; carryoverHours: number; totalOvertimeHours: number; isOver?: boolean; missingDates: string[] };
+  overtime?: {
+    businessHours: number;
+    allocatedHours: number;
+    overtimeHours: number;
+    carryoverHours: number;
+    totalOvertimeHours: number;
+    isOver?: boolean;
+    missingDates: string[];
+  };
   weeklyHoursByUser: Array<HoursPerWeek>;
 }
 
@@ -43,13 +51,13 @@ export default defineComponent({
       apiKey: savedValues?.apiKey || '',
       period: [moment().startOf('year'), moment()],
       workingHours: savedValues?.workingHours || 40,
-      workingDays: savedValues?.workingDays || [1,2,3,4,5],
+      workingDays: savedValues?.workingDays || [1, 2, 3, 4, 5],
       workingDaysPreset: [
-        {"name":"Monday", "id": 1},
-        {"name":"Tuesday", "id": 2},
-        {"name":"Wednesday", "id": 3},
-        {"name":"Thursday", "id": 4},
-        {"name":"Friday", "id": 5}
+        { name: 'Monday', id: 1 },
+        { name: 'Tuesday', id: 2 },
+        { name: 'Wednesday', id: 3 },
+        { name: 'Thursday', id: 4 },
+        { name: 'Friday', id: 5 }
       ],
       workspaces: [],
       users: [],
@@ -83,23 +91,23 @@ export default defineComponent({
       }
     );
 
-    const changeUser = function(user:string){
+    const changeUser = function (user: string) {
       //only needs to be defined if weekly hours is != 40
-      const weeklyHoursByUser: Array<HoursPerWeek>  = [
-        {id: "61f92781ac89702589768bb9", "hoursPerWeek": 8.6},
-        {id: "6180ff00f9914c556e304294", "hoursPerWeek":  24},
-        {id: "6156ba67d46cbb188cf768d7", "hoursPerWeek":  1.97},
-        {id: "6156ba5ab89747128196a7e9", "hoursPerWeek":  10},
-        {id: "615ab7b9bed77c3f3e9743e8", "hoursPerWeek":  8.6}
+      const weeklyHoursByUser: Array<HoursPerWeek> = [
+        { id: '61f92781ac89702589768bb9', hoursPerWeek: 8.6 },
+        { id: '6180ff00f9914c556e304294', hoursPerWeek: 19 },
+        { id: '6156ba67d46cbb188cf768d7', hoursPerWeek: 1.97 },
+        { id: '6156ba5ab89747128196a7e9', hoursPerWeek: 10 },
+        { id: '615ab7b9bed77c3f3e9743e8', hoursPerWeek: 8.6 },
+        { id: '67a247e19a004c22985ca0d8', hoursPerWeek: 9.89 }
       ];
 
-      const userSpecificHours = weeklyHoursByUser.find(item => item.id === user);
-      if(userSpecificHours &&  userSpecificHours.hoursPerWeek){
+      const userSpecificHours = weeklyHoursByUser.find((item) => item.id === user);
+      if (userSpecificHours && userSpecificHours.hoursPerWeek) {
         formState.workingHours = userSpecificHours.hoursPerWeek;
-      }else{
+      } else {
         formState.workingHours = 40;
       }
-
     };
 
     const validateApiKey = async (rule: RuleObject, value: string) => {
@@ -137,7 +145,7 @@ export default defineComponent({
         );
         if (result) {
           const carryoverHours = overtimeCarryover
-            .filter(c => c.userId === formState.userId && c.year === formState.period![0].year())
+            .filter((c) => c.userId === formState.userId && c.year === formState.period![0].year())
             .reduce((sum, c) => sum + c.overtimeHours, 0);
           const baseOvertimeHours = moment.duration(result.overtimeSeconds * 1000).asHours();
           formState.overtime = {
@@ -146,7 +154,7 @@ export default defineComponent({
             overtimeHours: baseOvertimeHours,
             carryoverHours,
             totalOvertimeHours: baseOvertimeHours + carryoverHours,
-            isOver: (baseOvertimeHours + carryoverHours) > 0,
+            isOver: baseOvertimeHours + carryoverHours > 0,
             missingDates: result.missingDates.map((date) => moment(date).format('dd, DD.MM.YYYY'))
           };
         } else {
@@ -166,7 +174,6 @@ export default defineComponent({
         );
       }
     };
-
 
     const rules = {
       apiKey: [{ validator: validateApiKey, trigger: 'blur' }]
